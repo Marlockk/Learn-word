@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Learn Word</string>
+    <string name="button_skip">Skip</string>
+    <string name="title_galaxy">Galaxy</string>
+    <string name="close_image_button">close image button</string>
+    <string name="correct_answer_icon">correct answer icon</string>
+    <string name="title_correct">Correct!</string>
+    <string name="title_wrong">Wrong!</string>
+    <string name="continues">Continue</string>
+
+
+</resources>

@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">NewApp</string>
+    <string name="button_skip">Пропустить</string>
+    <string name="title_galaxy">Galaxy</string>
+    <string name="close_image_button">close image button</string>
+    <string name="correct_answer_icon">correct answer icon</string>
+    <string name="title_correct">Правильно!</string>
+    <string name="title_wrong">Неправильно!</string>
+    <string name="continues">Продолжить</string>
+
+
+</resources>
