@@ -1,4 +1,4 @@
-package com.example.newapp
+package com.example.newapp.presentation
 
 import android.os.Bundle
 import android.widget.LinearLayout
@@ -6,6 +6,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import com.example.newapp.domain.LearnWordsTrainer
+import com.example.newapp.domain.NUMBER_OF_ANSWERS
+import com.example.newapp.domain.Question
+import com.example.newapp.R
 import com.example.newapp.databinding.ActivityLearnWordBinding
 
 class MainActivity : AppCompatActivity() {
@@ -219,6 +223,8 @@ class MainActivity : AppCompatActivity() {
             messageText = getResources().getString(R.string.title_wrong)
         }
 
+
+
         with(binding) {
             btnSkip.isVisible = false
             layoutResult.isVisible = true
@@ -230,10 +236,3 @@ class MainActivity : AppCompatActivity() {
 
     }
 }
-
-
-
-
-
-
-

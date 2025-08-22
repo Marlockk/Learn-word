@@ -1,4 +1,4 @@
-package com.example.newapp
+package com.example.newapp.domain
 
 data class Word(
     val original: String,
