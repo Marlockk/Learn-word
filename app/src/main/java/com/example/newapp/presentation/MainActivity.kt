@@ -1,19 +1,17 @@
 package com.example.newapp.presentation
 
 import android.os.Bundle
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.example.newapp.domain.LearnWordsTrainer
 import com.example.newapp.domain.NUMBER_OF_ANSWERS
-import com.example.newapp.domain.Question
-import com.example.newapp.R
+import com.example.newapp.domain.QuestionDataClass
 import com.example.newapp.databinding.ActivityLearnWordBinding
+import com.example.newapp.domain.AnswerChecker
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var answerChecker: AnswerChecker
     private var _binding: ActivityLearnWordBinding? = null
     private val binding
         get() = _binding
@@ -24,6 +22,8 @@ class MainActivity : AppCompatActivity() {
         _binding = ActivityLearnWordBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        answerChecker = AnswerChecker(this)
+
         val trainer = LearnWordsTrainer()
 
         showNextQuestion(trainer)
@@ -31,10 +31,10 @@ class MainActivity : AppCompatActivity() {
         with(binding) {
             btnContinue.setOnClickListener {
                 layoutResult.isVisible = false
-                markAnswerNeutral(layoutAnswer1, tvVariantNumber1, tvVariantValue1)
-                markAnswerNeutral(layoutAnswer2, tvVariantNumber2, tvVariantValue2)
-                markAnswerNeutral(layoutAnswer3, tvVariantNumber3, tvVariantValue3)
-                markAnswerNeutral(layoutAnswer4, tvVariantNumber4, tvVariantValue4)
+                answerChecker.markAnswerNeutral(layoutAnswer1, tvVariantNumber1, tvVariantValue1)
+                answerChecker.markAnswerNeutral(layoutAnswer2, tvVariantNumber2, tvVariantValue2)
+                answerChecker.markAnswerNeutral(layoutAnswer3, tvVariantNumber3, tvVariantValue3)
+                answerChecker.markAnswerNeutral(layoutAnswer4, tvVariantNumber4, tvVariantValue4)
                 showNextQuestion(trainer)
             }
             btnSkip.setOnClickListener {
@@ -46,193 +46,151 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showNextQuestion(trainer: LearnWordsTrainer) {
-        val firstQuestion: Question? = trainer.getNextQuestion()
+        val firstQuestionDataClass: QuestionDataClass? = trainer.getNextQuestion()
         with(binding) {
-            if (firstQuestion == null || firstQuestion.variants.size < NUMBER_OF_ANSWERS) {
+            if (firstQuestionDataClass == null || firstQuestionDataClass.variants.size < NUMBER_OF_ANSWERS) {
                 tvQuestionWord.isVisible = false
                 layoutVariants.isVisible = false
                 btnSkip.text = "Complete"
             } else {
                 btnSkip.isVisible = true
                 tvQuestionWord.isVisible = true
-                tvQuestionWord.text = firstQuestion.correctAnswer.original
+                tvQuestionWord.text = firstQuestionDataClass.correctAnswer.original
 
-                tvVariantValue1.text = firstQuestion.variants[0].translate
-                tvVariantValue2.text = firstQuestion.variants[1].translate
-                tvVariantValue3.text = firstQuestion.variants[2].translate
-                tvVariantValue4.text = firstQuestion.variants[3].translate
+                tvVariantValue1.text = firstQuestionDataClass.variants[0].translate
+                tvVariantValue2.text = firstQuestionDataClass.variants[1].translate
+                tvVariantValue3.text = firstQuestionDataClass.variants[2].translate
+                tvVariantValue4.text = firstQuestionDataClass.variants[3].translate
 
                 layoutAnswer1.setOnClickListener {
                     if (trainer.checkAnswer(0)) {
-                        markAnswerCorrect(layoutAnswer1, tvVariantNumber1, tvVariantValue1)
-                        showResultMessage(true)
+                        answerChecker.markAnswerCorrect(
+                            layoutAnswer1,
+                            tvVariantNumber1,
+                            tvVariantValue1
+                        )
+                        answerChecker.showResultMessage(
+                            true,
+                            btnSkip,
+                            layoutResult,
+                            btnContinue,
+                            tvResultMessage,
+                            ivResultIcon
+                        )
                     } else {
-                        markAnswerWrong(layoutAnswer1, tvVariantNumber1, tvVariantValue1)
-                        showResultMessage(false)
+                        answerChecker.markAnswerWrong(
+                            layoutAnswer1,
+                            tvVariantNumber1,
+                            tvVariantValue1, btnContinue, layoutResult
+                        )
+                        answerChecker.showResultMessage(
+                            false,
+                            btnSkip,
+                            layoutResult,
+                            btnContinue,
+                            tvResultMessage,
+                            ivResultIcon
+                        )
                     }
                 }
                 layoutAnswer2.setOnClickListener {
                     if (trainer.checkAnswer(1)) {
-                        markAnswerCorrect(layoutAnswer2, tvVariantNumber2, tvVariantValue2)
-                        showResultMessage(true)
+                        answerChecker.markAnswerCorrect(
+                            layoutAnswer2,
+                            tvVariantNumber2,
+                            tvVariantValue2
+                        )
+                        answerChecker.showResultMessage(
+                            true,
+                            btnSkip,
+                            layoutResult,
+                            btnContinue,
+                            tvResultMessage,
+                            ivResultIcon
+                        )
                     } else {
-                        markAnswerWrong(layoutAnswer2, tvVariantNumber2, tvVariantValue2)
-                        showResultMessage(false)
+                        answerChecker.markAnswerWrong(
+                            layoutAnswer2,
+                            tvVariantNumber2,
+                            tvVariantValue2, btnContinue, layoutResult
+                        )
+                        answerChecker.showResultMessage(
+                            false,
+                            btnSkip,
+                            layoutResult,
+                            btnContinue,
+                            tvResultMessage,
+                            ivResultIcon
+                        )
                     }
                 }
                 layoutAnswer3.setOnClickListener {
                     if (trainer.checkAnswer(2)) {
-                        markAnswerCorrect(layoutAnswer3, tvVariantNumber3, tvVariantValue3)
-                        showResultMessage(true)
+                        answerChecker.markAnswerCorrect(
+                            layoutAnswer3,
+                            tvVariantNumber3,
+                            tvVariantValue3
+                        )
+                        answerChecker.showResultMessage(
+                            true,
+                            btnSkip,
+                            layoutResult,
+                            btnContinue,
+                            tvResultMessage,
+                            ivResultIcon
+                        )
                     } else {
-                        markAnswerWrong(layoutAnswer3, tvVariantNumber3, tvVariantValue3)
-                        showResultMessage(false)
+                        answerChecker.markAnswerWrong(
+                            layoutAnswer3,
+                            tvVariantNumber3,
+                            tvVariantValue3,
+                            btnContinue,
+                            layoutResult
+                        )
+                        answerChecker.showResultMessage(
+                            false,
+                            btnSkip,
+                            layoutResult,
+                            btnContinue,
+                            tvResultMessage,
+                            ivResultIcon
+                        )
                     }
                 }
                 layoutAnswer4.setOnClickListener {
                     if (trainer.checkAnswer(3)) {
-                        markAnswerCorrect(layoutAnswer4, tvVariantNumber4, tvVariantValue4)
-                        showResultMessage(true)
+                        answerChecker.markAnswerCorrect(
+                            layoutAnswer4,
+                            tvVariantNumber4,
+                            tvVariantValue4
+                        )
+                        answerChecker.showResultMessage(
+                            true,
+                            btnSkip,
+                            layoutResult,
+                            btnContinue,
+                            tvResultMessage,
+                            ivResultIcon
+                        )
                     } else {
-                        markAnswerWrong(layoutAnswer4, tvVariantNumber4, tvVariantValue4)
-                        showResultMessage(false)
+                        answerChecker.markAnswerWrong(
+                            layoutAnswer4,
+                            tvVariantNumber4,
+                            tvVariantValue4,
+                            btnContinue,
+                            layoutResult
+                        )
+                        answerChecker.showResultMessage(
+                            false,
+                            btnSkip,
+                            layoutResult,
+                            btnContinue,
+                            tvResultMessage,
+                            ivResultIcon
+                        )
                     }
                 }
             }
         }
-    }
-
-    private fun markAnswerCorrect(
-        layoutAnswer: LinearLayout,
-        tvVariantNumber: TextView,
-        tvVariantValue: TextView,
-    ) {
-
-        layoutAnswer.background = ContextCompat.getDrawable(
-            this@MainActivity,
-            R.drawable.shape_rounded_containers_correct
-        )
-
-        tvVariantNumber.background = ContextCompat.getDrawable(
-            this@MainActivity,
-            R.drawable.shape_rounded_variants_correct
-        )
-
-        tvVariantNumber.setTextColor(
-            ContextCompat.getColor(
-                this@MainActivity,
-                R.color.white
-            )
-        )
-
-        tvVariantValue.setTextColor(
-            ContextCompat.getColor(
-                this@MainActivity,
-                R.color.correctAnswerColor
-            )
-        )
-
-    }
-
-    private fun markAnswerWrong(
-        layoutAnswer: LinearLayout,
-        tvVariantNumber: TextView,
-        tvVariantValue: TextView,
-    ) {
-
-
-        layoutAnswer.background = ContextCompat.getDrawable(
-            this@MainActivity,
-            R.drawable.shape_rounded_containers_wrong
-        )
-
-        tvVariantNumber.background = ContextCompat.getDrawable(
-            this@MainActivity,
-            R.drawable.shape_rounded_variants_wrong
-        )
-
-        tvVariantNumber.setTextColor(
-            ContextCompat.getColor(
-                this@MainActivity,
-                R.color.white
-            )
-        )
-
-        tvVariantValue.setTextColor(
-            ContextCompat.getColor(
-                this@MainActivity,
-                R.color.wrongAnswerColor
-            )
-        )
-
-
-        binding.btnContinue.setTextColor(
-            ContextCompat.getColor(
-                this@MainActivity,
-                R.color.wrongAnswerColor
-            )
-        )
-
-        binding.layoutResult.isVisible = true
-    }
-
-    private fun markAnswerNeutral(
-        layoutAnswer: LinearLayout,
-        tvVariantNumber: TextView,
-        tvVariantValue: TextView,
-    ) {
-
-        layoutAnswer.background = ContextCompat.getDrawable(
-            this@MainActivity,
-            R.drawable.shape_rounded_containers
-        )
-
-        tvVariantValue.setTextColor(
-            ContextCompat.getColor(
-                this@MainActivity,
-                R.color.textVariantsColor
-            )
-        )
-
-        tvVariantNumber.apply {
-            background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.shape_rounded_variants
-            )
-            setTextColor(
-                ContextCompat.getColor(
-                    this@MainActivity,
-                    R.color.textVariantsColor
-                )
-            )
-        }
-    }
-
-    private fun showResultMessage(isCorrect: Boolean) {
-        val color: Int
-        val messageText: String
-        val resultIconResource: Int
-
-        if (isCorrect) {
-            color = ContextCompat.getColor(this, R.color.correctAnswerColor)
-            resultIconResource = R.drawable.ic_correct
-            messageText = getResources().getString(R.string.title_correct)
-        } else {
-            color = ContextCompat.getColor(this, R.color.wrongAnswerColor)
-            resultIconResource = R.drawable.ic_wrong
-            messageText = getResources().getString(R.string.title_wrong)
-        }
-
-
-
-        with(binding) {
-            btnSkip.isVisible = false
-            layoutResult.isVisible = true
-            btnContinue.setTextColor(color)
-            layoutResult.setBackgroundColor(color)
-            tvResultMessage.text = messageText
-            ivResultIcon.setImageResource(resultIconResource)
-        }
-
     }
 }
