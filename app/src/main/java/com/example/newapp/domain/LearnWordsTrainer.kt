@@ -1,17 +1,18 @@
 package com.example.newapp.domain
 
-import com.example.newapp.data.dictionary
+import com.example.newapp.data.getEbuchiyList
 
 class LearnWordsTrainer(){
-    val dict = dictionary
+
+    val words = getEbuchiyList()
     private var currentQuestionDataClass: QuestionDataClass? = null
     fun getNextQuestion(): QuestionDataClass? {
-        val notLearnedList = dict.filter { !it.learned }
+        val notLearnedList = words.filter { !it.learned }
         if (notLearnedList.isEmpty()) return null
 
         val questionWords =
             if (notLearnedList.size < NUMBER_OF_ANSWERS) {
-                val learnedList = dict.filter { it.learned }.shuffled()
+                val learnedList = words.filter { it.learned }.shuffled()
                 notLearnedList.shuffled()
                     .take(NUMBER_OF_ANSWERS) + learnedList
                     .take(NUMBER_OF_ANSWERS - notLearnedList.size)
@@ -21,6 +22,7 @@ class LearnWordsTrainer(){
         val correctAnswer: WordDataClass = questionWords.random()
 
         currentQuestionDataClass = QuestionDataClass(
+            id = correctAnswer.id,
             variants = questionWords,
             correctAnswer = correctAnswer,
         )
