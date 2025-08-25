@@ -1,16 +1,16 @@
 package com.example.newapp.presentation
-
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import com.example.newapp.domain.LearnWordsTrainer
 import com.example.newapp.domain.NUMBER_OF_ANSWERS
 import com.example.newapp.R
+import com.example.newapp.data.WordRepository
 import com.example.newapp.databinding.ActivityLearnWordBinding
-import com.example.newapp.domain.QuestionDataClass
+import com.example.newapp.domain.LearnWordsInteractor
+import com.example.newapp.domain.QuestionModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,14 +19,17 @@ class MainActivity : AppCompatActivity() {
         get() = _binding
             ?: throw IllegalStateException("Binding for ActivityLearnWordBinding must not be null")
 
+    private val trainer = LearnWordsInteractor(WordRepository())
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityLearnWordBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val trainer = LearnWordsTrainer()
 
-        showNextQuestion(trainer)
+        trainer.getList()
+
+        showNextQuestion()
 
         with(binding) {
             btnContinue.setOnClickListener {
@@ -35,18 +38,19 @@ class MainActivity : AppCompatActivity() {
                 markAnswerNeutral(layoutAnswer2, tvVariantNumber2, tvVariantValue2)
                 markAnswerNeutral(layoutAnswer3, tvVariantNumber3, tvVariantValue3)
                 markAnswerNeutral(layoutAnswer4, tvVariantNumber4, tvVariantValue4)
-                showNextQuestion(trainer)
+                showNextQuestion()
             }
+            trainer
             btnSkip.setOnClickListener {
-                showNextQuestion(trainer)
+                showNextQuestion()
             }
         }
 
 
     }
 
-    private fun showNextQuestion(trainer: LearnWordsTrainer) {
-        val firstQuestion: QuestionDataClass? = trainer.getNextQuestion()
+    private fun showNextQuestion() {
+        val firstQuestion: QuestionModel? = trainer.getNextQuestion()
         with(binding) {
             if (firstQuestion == null || firstQuestion.variants.size < NUMBER_OF_ANSWERS) {
                 tvQuestionWord.isVisible = false
@@ -55,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 btnSkip.isVisible = true
                 tvQuestionWord.isVisible = true
-                tvQuestionWord.text = firstQuestion.correctAnswer.original
+                tvQuestionWord.text = firstQuestion.question.original
 
                 tvVariantValue1.text = firstQuestion.variants[0].translate
                 tvVariantValue2.text = firstQuestion.variants[1].translate
@@ -63,7 +67,9 @@ class MainActivity : AppCompatActivity() {
                 tvVariantValue4.text = firstQuestion.variants[3].translate
 
                 layoutAnswer1.setOnClickListener {
-                    if (trainer.checkAnswer(0)) {
+                    val selectedWord = firstQuestion.variants[0]
+                val isCorrect = trainer.checkAnswer(firstQuestion.questionId, selectedWord.wordId)
+                    if (isCorrect) {
                         markAnswerCorrect(layoutAnswer1, tvVariantNumber1, tvVariantValue1)
                         showResultMessage(true)
                     } else {
@@ -72,7 +78,9 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 layoutAnswer2.setOnClickListener {
-                    if (trainer.checkAnswer(1)) {
+                    val selectedWord = firstQuestion.variants[1]
+                    val isCorrect = trainer.checkAnswer(firstQuestion.questionId, selectedWord.wordId)
+                    if (isCorrect) {
                         markAnswerCorrect(layoutAnswer2, tvVariantNumber2, tvVariantValue2)
                         showResultMessage(true)
                     } else {
@@ -81,7 +89,9 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 layoutAnswer3.setOnClickListener {
-                    if (trainer.checkAnswer(2)) {
+                    val selectedWord = firstQuestion.variants[2]
+                    val isCorrect = trainer.checkAnswer(firstQuestion.questionId, selectedWord.wordId)
+                    if (isCorrect) {
                         markAnswerCorrect(layoutAnswer3, tvVariantNumber3, tvVariantValue3)
                         showResultMessage(true)
                     } else {
@@ -90,7 +100,9 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 layoutAnswer4.setOnClickListener {
-                    if (trainer.checkAnswer(3)) {
+                    val selectedWord = firstQuestion.variants[3]
+                    val isCorrect = trainer.checkAnswer(firstQuestion.questionId, selectedWord.wordId)
+                    if (isCorrect) {
                         markAnswerCorrect(layoutAnswer4, tvVariantNumber4, tvVariantValue4)
                         showResultMessage(true)
                     } else {
