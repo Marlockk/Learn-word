@@ -2,6 +2,6 @@ package com.example.newapp.domain
 
 data class QuestionModel(
     val questionId: Int,
-    val question: WordModel,
+    val original: String,
     val variants: List<WordModel>,
 )

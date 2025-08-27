@@ -27,7 +27,7 @@ class QuizeInteractor(private val repository: WordRepository) {
 
         return QuestionModel(
             questionId = correctWord.wordId,
-            question = correctWord,
+            original = correctWord.original,
             variants = allVariants
         )
     }

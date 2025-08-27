@@ -56,79 +56,94 @@ class MainActivity : AppCompatActivity() {
 
 
     fun subscribe() {
-        myViewModel?.answer?.observe(this) { isCorrect ->
-            with(binding) {
-                when (isCorrect) {
-                    true -> {
-                        markAnswerCorrect(layoutAnswer1, tvVariantNumber1, tvVariantValue1)
-                        markAnswerCorrect(layoutAnswer2, tvVariantNumber2, tvVariantValue2)
-                        markAnswerCorrect(
-                            layoutAnswer3,
-                            binding.tvVariantNumber3,
-                            binding.tvVariantValue3
-                        )
-                        markAnswerCorrect(layoutAnswer4, tvVariantNumber4, tvVariantValue4)
-                        showResultMessage(true)
-                    }
+        myViewModel?.answer?.observe(this) { result ->
+            when (result.selectedIndex) {
+                0 -> if (result.isCorrect) {
+                    markAnswerCorrect(binding.layoutAnswer1,binding.tvVariantNumber1,binding.tvVariantValue1)
+                    showResultMessage(true)
+                } else {
+                    markAnswerWrong(binding.layoutAnswer1,binding.tvVariantNumber1,binding.tvVariantValue1)
+                    showResultMessage(false)
+                }
 
-                    false -> {
-                        markAnswerWrong(layoutAnswer1, tvVariantNumber1, tvVariantValue1)
-                        markAnswerWrong(layoutAnswer2, tvVariantNumber2, tvVariantValue2)
-                        markAnswerWrong(layoutAnswer3, tvVariantNumber3, tvVariantValue3)
-                        markAnswerWrong(layoutAnswer4, tvVariantNumber4, tvVariantValue4)
-                        showResultMessage(false)
-                    }
+                1 -> if (result.isCorrect) {
+                    markAnswerCorrect(binding.layoutAnswer2,binding.tvVariantNumber2,binding.tvVariantValue2)
+                    showResultMessage(true)
+                } else {
+                    markAnswerWrong(binding.layoutAnswer2,binding.tvVariantNumber2,binding.tvVariantValue2)
+                    showResultMessage(false)
+                }
+
+                2 -> if (result.isCorrect) {
+                    markAnswerCorrect(binding.layoutAnswer3,binding.tvVariantNumber3,binding.tvVariantValue3)
+                    showResultMessage(true)
+                } else {
+                    markAnswerWrong(binding.layoutAnswer3,binding.tvVariantNumber3,binding.tvVariantValue3)
+                    showResultMessage(false)
+                }
+                3 -> if (result.isCorrect) {
+                    markAnswerCorrect(binding.layoutAnswer4,binding.tvVariantNumber4,binding.tvVariantValue4)
+                    showResultMessage(true)
+                } else {
+                    markAnswerWrong(binding.layoutAnswer4,binding.tvVariantNumber4,binding.tvVariantValue4)
+                    showResultMessage(false)
                 }
             }
-            myViewModel?.question?.observe(this) { question ->
-                with(binding) {
-                    if (question == null || question.variants.size < NUMBER_OF_ANSWERS) {
-                        tvQuestionWord.isVisible = false
-                        layoutVariants.isVisible = false
-                        btnSkip.text = "Complete"
-                    } else {
-                        btnSkip.isVisible = true
-                        tvQuestionWord.isVisible = true
-                        tvQuestionWord.text = question.question.original
+        }
 
-                        tvVariantValue1.text = question.variants[0].translate
-                        tvVariantValue2.text = question.variants[1].translate
-                        tvVariantValue3.text = question.variants[2].translate
-                        tvVariantValue4.text = question.variants[3].translate
+        myViewModel?.question?.observe(this) { question ->
+            with(binding) {
+                if (question == null || question.variants.size < NUMBER_OF_ANSWERS) {
+                    tvQuestionWord.isVisible = false
+                    layoutVariants.isVisible = false
+                    btnSkip.text = "Complete"
+                } else {
+                    btnSkip.isVisible = true
+                    tvQuestionWord.isVisible = true
+                    tvQuestionWord.text = question.original
 
-                        layoutAnswer1.setOnClickListener {
-                            myViewModel?.checkAnswer(
-                                question.questionId,
-                                question.variants[0].wordId
-                            )
+                    tvVariantValue1.text = question.variants[0].translate
+                    tvVariantValue2.text = question.variants[1].translate
+                    tvVariantValue3.text = question.variants[2].translate
+                    tvVariantValue4.text = question.variants[3].translate
 
-                        }
-                        layoutAnswer2.setOnClickListener {
-                            myViewModel?.checkAnswer(
-                                question.questionId,
-                                question.variants[1].wordId
-                            )
+                    layoutAnswer1.setOnClickListener {
+                        myViewModel?.checkAnswer(
+                            question.questionId,
+                            question.variants[0].wordId,
+                            selectedIndex = 0
+                        )
 
-                        }
-                        layoutAnswer3.setOnClickListener {
-                            myViewModel?.checkAnswer(
-                                question.questionId,
-                                question.variants[2].wordId
-                            )
+                    }
+                    layoutAnswer2.setOnClickListener {
+                        myViewModel?.checkAnswer(
+                            question.questionId,
+                            question.variants[1].wordId,
+                            selectedIndex = 1
+                        )
 
-                        }
-                        layoutAnswer4.setOnClickListener {
-                            myViewModel?.checkAnswer(
-                                question.questionId,
-                                question.variants[3].wordId
-                            )
+                    }
+                    layoutAnswer3.setOnClickListener {
+                        myViewModel?.checkAnswer(
+                            question.questionId,
+                            question.variants[2].wordId,
+                            selectedIndex = 2
+                        )
 
-                        }
+                    }
+                    layoutAnswer4.setOnClickListener {
+                        myViewModel?.checkAnswer(
+                            question.questionId,
+                            question.variants[3].wordId,
+                            selectedIndex = 3
+                        )
+
                     }
                 }
             }
         }
     }
+
     private fun showNextQuestion() {
         myViewModel?.getNextQuestion()
     }
