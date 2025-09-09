@@ -1,5 +1,6 @@
 package com.example.newapp.presentation
 
+import AnswerAdapter
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -21,9 +22,20 @@ class MainActivity : AppCompatActivity() {
         get() = _binding
             ?: throw IllegalStateException("Binding for ActivityLearnWordBinding must not be null")
 
+    private var myViewAdapter: AnswerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        myViewAdapter = AnswerAdapter { index, word ->
+            myViewModel?.checkAnswer(
+                questionId = index,
+                word.wordId,
+                index
+
+            )
+        }
+
 
 
         _binding = ActivityLearnWordBinding.inflate(layoutInflater)
