@@ -1,18 +1,21 @@
 package com.example.newapp.presentation
 
-import AnswerAdapter
+import com.example.newapp.domain.AnswerAdapter
 import android.os.Bundle
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
-import com.example.newapp.domain.NUMBER_OF_ANSWERS
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.newapp.domain.useCases.NUMBER_OF_ANSWERS
 import com.example.newapp.R
 import com.example.newapp.data.WordRepository
 import com.example.newapp.databinding.ActivityLearnWordBinding
-import com.example.newapp.domain.QuizeInteractor
+import com.example.newapp.domain.models.ExactlyModel
+import com.example.newapp.domain.useCases.QuizeInteractor
+import com.example.newapp.presentation.viewModels.MainViewModel
+import com.example.newapp.presentation.viewModels.MyViewModelFactory
 
 class MainActivity : AppCompatActivity() {
     private var myViewModel: MainViewModel? = null
@@ -21,89 +24,61 @@ class MainActivity : AppCompatActivity() {
     private val binding
         get() = _binding
             ?: throw IllegalStateException("Binding for ActivityLearnWordBinding must not be null")
-
     private var myViewAdapter: AnswerAdapter? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         myViewAdapter = AnswerAdapter { index, word ->
             myViewModel?.checkAnswer(
-                questionId = index,
-                word.wordId,
-                index
+                wordId = word.wordId,
+                selectedIndex = index
 
             )
         }
 
-
-
         _binding = ActivityLearnWordBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val recyclerView: RecyclerView = findViewById(R.id.recyclerAnswers)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = myViewAdapter
 
         myViewModel =
             ViewModelProvider(this, MyViewModelFactory(QuizeInteractor(WordRepository()))).get(
                 MainViewModel::class.java
             )
 
-
         showNextQuestion()
 
         with(binding) {
             btnContinue.setOnClickListener {
                 layoutResult.isVisible = false
-                markAnswerNeutral(layoutAnswer1, tvVariantNumber1, tvVariantValue1)
-                markAnswerNeutral(layoutAnswer2, tvVariantNumber2, tvVariantValue2)
-                markAnswerNeutral(layoutAnswer3, tvVariantNumber3, tvVariantValue3)
-                markAnswerNeutral(layoutAnswer4, tvVariantNumber4, tvVariantValue4)
                 showNextQuestion()
             }
             btnSkip.setOnClickListener {
                 showNextQuestion()
             }
         }
-
         subscribe()
     }
 
 
     fun subscribe() {
         myViewModel?.answer?.observe(this) { result ->
-            when (result.selectedIndex) {
-                0 -> if (result.isCorrect) {
-                    markAnswerCorrect(binding.layoutAnswer1,binding.tvVariantNumber1,binding.tvVariantValue1)
-                    showResultMessage(true)
-                } else {
-                    markAnswerWrong(binding.layoutAnswer1,binding.tvVariantNumber1,binding.tvVariantValue1)
-                    showResultMessage(false)
-                }
-
-                1 -> if (result.isCorrect) {
-                    markAnswerCorrect(binding.layoutAnswer2,binding.tvVariantNumber2,binding.tvVariantValue2)
-                    showResultMessage(true)
-                } else {
-                    markAnswerWrong(binding.layoutAnswer2,binding.tvVariantNumber2,binding.tvVariantValue2)
-                    showResultMessage(false)
-                }
-
-                2 -> if (result.isCorrect) {
-                    markAnswerCorrect(binding.layoutAnswer3,binding.tvVariantNumber3,binding.tvVariantValue3)
-                    showResultMessage(true)
-                } else {
-                    markAnswerWrong(binding.layoutAnswer3,binding.tvVariantNumber3,binding.tvVariantValue3)
-                    showResultMessage(false)
-                }
-                3 -> if (result.isCorrect) {
-                    markAnswerCorrect(binding.layoutAnswer4,binding.tvVariantNumber4,binding.tvVariantValue4)
-                    showResultMessage(true)
-                } else {
-                    markAnswerWrong(binding.layoutAnswer4,binding.tvVariantNumber4,binding.tvVariantValue4)
-                    showResultMessage(false)
-                }
+            result?.let { selectedModel ->
+                myViewAdapter?.updateData(selectedModel.isCorrect, selectedModel.selectedIndex)
+                showResultMessage(selectedModel.isCorrect)
             }
         }
-
         myViewModel?.question?.observe(this) { question ->
+            question?.let { questionModel ->
+                val mapNewVariants =
+                    questionModel.variants.map { variant -> ExactlyModel(variant.wordId, variant.translate, variant.isCorrect) }
+                myViewAdapter?.setDataValue(mapNewVariants)
+            }
+
+
             with(binding) {
                 if (question == null || question.variants.size < NUMBER_OF_ANSWERS) {
                     tvQuestionWord.isVisible = false
@@ -113,159 +88,15 @@ class MainActivity : AppCompatActivity() {
                     btnSkip.isVisible = true
                     tvQuestionWord.isVisible = true
                     tvQuestionWord.text = question.original
-
-                    tvVariantValue1.text = question.variants[0].translate
-                    tvVariantValue2.text = question.variants[1].translate
-                    tvVariantValue3.text = question.variants[2].translate
-                    tvVariantValue4.text = question.variants[3].translate
-
-                    layoutAnswer1.setOnClickListener {
-                        myViewModel?.checkAnswer(
-                            question.questionId,
-                            question.variants[0].wordId,
-                            selectedIndex = 0
-                        )
-
-                    }
-                    layoutAnswer2.setOnClickListener {
-                        myViewModel?.checkAnswer(
-                            question.questionId,
-                            question.variants[1].wordId,
-                            selectedIndex = 1
-                        )
-
-                    }
-                    layoutAnswer3.setOnClickListener {
-                        myViewModel?.checkAnswer(
-                            question.questionId,
-                            question.variants[2].wordId,
-                            selectedIndex = 2
-                        )
-
-                    }
-                    layoutAnswer4.setOnClickListener {
-                        myViewModel?.checkAnswer(
-                            question.questionId,
-                            question.variants[3].wordId,
-                            selectedIndex = 3
-                        )
-
-                    }
                 }
             }
         }
     }
 
+
     private fun showNextQuestion() {
         myViewModel?.getNextQuestion()
     }
-
-    private fun markAnswerCorrect(
-        layoutAnswer: LinearLayout,
-        tvVariantNumber: TextView,
-        tvVariantValue: TextView,
-    ) {
-
-        layoutAnswer.background = ContextCompat.getDrawable(
-            this@MainActivity,
-            R.drawable.shape_rounded_containers_correct
-        )
-
-        tvVariantNumber.background = ContextCompat.getDrawable(
-            this@MainActivity,
-            R.drawable.shape_rounded_variants_correct
-        )
-
-        tvVariantNumber.setTextColor(
-            ContextCompat.getColor(
-                this@MainActivity,
-                R.color.white
-            )
-        )
-
-        tvVariantValue.setTextColor(
-            ContextCompat.getColor(
-                this@MainActivity,
-                R.color.correctAnswerColor
-            )
-        )
-
-    }
-
-    private fun markAnswerWrong(
-        layoutAnswer: LinearLayout,
-        tvVariantNumber: TextView,
-        tvVariantValue: TextView,
-    ) {
-
-
-        layoutAnswer.background = ContextCompat.getDrawable(
-            this@MainActivity,
-            R.drawable.shape_rounded_containers_wrong
-        )
-
-        tvVariantNumber.background = ContextCompat.getDrawable(
-            this@MainActivity,
-            R.drawable.shape_rounded_variants_wrong
-        )
-
-        tvVariantNumber.setTextColor(
-            ContextCompat.getColor(
-                this@MainActivity,
-                R.color.white
-            )
-        )
-
-        tvVariantValue.setTextColor(
-            ContextCompat.getColor(
-                this@MainActivity,
-                R.color.wrongAnswerColor
-            )
-        )
-
-
-        binding.btnContinue.setTextColor(
-            ContextCompat.getColor(
-                this@MainActivity,
-                R.color.wrongAnswerColor
-            )
-        )
-
-        binding.layoutResult.isVisible = true
-    }
-
-    private fun markAnswerNeutral(
-        layoutAnswer: LinearLayout,
-        tvVariantNumber: TextView,
-        tvVariantValue: TextView,
-    ) {
-
-        layoutAnswer.background = ContextCompat.getDrawable(
-            this@MainActivity,
-            R.drawable.shape_rounded_containers
-        )
-
-        tvVariantValue.setTextColor(
-            ContextCompat.getColor(
-                this@MainActivity,
-                R.color.textVariantsColor
-            )
-        )
-
-        tvVariantNumber.apply {
-            background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.shape_rounded_variants
-            )
-            setTextColor(
-                ContextCompat.getColor(
-                    this@MainActivity,
-                    R.color.textVariantsColor
-                )
-            )
-        }
-    }
-
     private fun showResultMessage(isCorrect: Boolean) {
         val color: Int
         val messageText: String
@@ -281,8 +112,6 @@ class MainActivity : AppCompatActivity() {
             messageText = getResources().getString(R.string.title_wrong)
         }
 
-
-
         with(binding) {
             btnSkip.isVisible = false
             layoutResult.isVisible = true
@@ -291,6 +120,6 @@ class MainActivity : AppCompatActivity() {
             tvResultMessage.text = messageText
             ivResultIcon.setImageResource(resultIconResource)
         }
-
     }
 }
+

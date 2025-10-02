@@ -1,4 +1,4 @@
-package com.example.newapp.domain
+package com.example.newapp.domain.models
 
 data class SelectedModel(
     val selectedIndex: Int,

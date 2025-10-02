@@ -1,5 +1,5 @@
 package com.example.newapp.data
-import com.example.newapp.domain.WordModel
+import com.example.newapp.domain.models.WordModel
 
 class WordRepository {
     private val dictionary = listOf(
