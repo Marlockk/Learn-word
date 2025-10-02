@@ -1,8 +1,8 @@
-package com.example.newapp.presentation
+package com.example.newapp.presentation.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.newapp.domain.QuizeInteractor
+import com.example.newapp.domain.useCases.QuizeInteractor
 
 
 class MyViewModelFactory(private val quizeInteractor: QuizeInteractor) : ViewModelProvider.Factory {

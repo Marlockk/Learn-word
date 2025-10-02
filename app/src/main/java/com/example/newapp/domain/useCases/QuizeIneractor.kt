@@ -1,6 +1,10 @@
-package com.example.newapp.domain
-import com.example.newapp.data.WordRepository
+package com.example.newapp.domain.useCases
 
+import com.example.newapp.data.WordRepository
+import com.example.newapp.domain.models.ExactlyModel
+import com.example.newapp.domain.models.IsCorrect
+import com.example.newapp.domain.models.QuestionModel
+import com.example.newapp.domain.models.WordModel
 
 class QuizeInteractor(private val repository: WordRepository) {
 
@@ -23,19 +27,28 @@ class QuizeInteractor(private val repository: WordRepository) {
             (notLearnedList - correctWord).shuffled().take(NUMBER_OF_ANSWERS - 1)
         }
 
+
         val allVariants = (variants + correctWord).shuffled()
+
+        val newVariants = allVariants.map { word ->
+            ExactlyModel(
+                wordId = word.wordId,
+                translate = word.translate,
+                isCorrect = IsCorrect.NEUTRAL
+            )
+        }
 
         return QuestionModel(
             questionId = correctWord.wordId,
             original = correctWord.original,
-            variants = allVariants
+            variants = newVariants
         )
     }
-
 
     fun checkAnswer(questionId: Int, answerId: Int): Boolean {
         val correctWord = getList().find { it.wordId == questionId }
         val selectedWord = getList().find { it.wordId == answerId }
+
         return correctWord?.wordId == selectedWord?.wordId
     }
 }
