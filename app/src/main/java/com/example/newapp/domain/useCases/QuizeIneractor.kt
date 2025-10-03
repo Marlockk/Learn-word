@@ -1,16 +1,32 @@
 package com.example.newapp.domain.useCases
-
 import com.example.newapp.data.WordRepository
 import com.example.newapp.domain.models.ExactlyModel
 import com.example.newapp.domain.models.IsCorrect
 import com.example.newapp.domain.models.QuestionModel
 import com.example.newapp.domain.models.WordModel
 
+/**
+ *Основная логика приложения
+ */
+
 class QuizeInteractor(private val repository: WordRepository) {
+
+    /***
+     * Получение репозитория в интеракторе
+     */
 
     fun getList(): List<WordModel> {
         return repository.getEbuchiyList()
     }
+
+
+    /**
+     * Метод формирования нового списка вопросов, возвращает модель вопроса
+     * questionId содержит id для каждого полученного слова для загадки
+     * original содержит оригинальный текст на английском для каждого слова из списка
+     * variants содержит случайные 4 значения для выбора из модели ExactlyModel, по умолчанию состояние этих
+     * значений нейтральное
+     */
 
     fun getNextQuestion(): QuestionModel? {
         val notLearnedList = getList().filter { !it.learned }
@@ -45,6 +61,10 @@ class QuizeInteractor(private val repository: WordRepository) {
         )
     }
 
+
+    /**    Метод проверки ответа
+     *  Возвращает булевый результат при проверке двух значений, корректное слово и выбранное слово
+     */
     fun checkAnswer(questionId: Int, answerId: Int): Boolean {
         val correctWord = getList().find { it.wordId == questionId }
         val selectedWord = getList().find { it.wordId == answerId }
@@ -53,4 +73,6 @@ class QuizeInteractor(private val repository: WordRepository) {
     }
 }
 
+
+/** Константа для установки количества отображаемых значений */
 const val NUMBER_OF_ANSWERS: Int = 4

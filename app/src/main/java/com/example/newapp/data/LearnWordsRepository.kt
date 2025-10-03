@@ -29,6 +29,10 @@ class WordRepository {
         WordModel(24, "Space", "Космос"),
         WordModel(25, "Probability", "Вероятность")
     )
+
+/**
+ * геттер получения репозитория
+ */
     fun getEbuchiyList(): List<WordModel> {
         return dictionary
     }
