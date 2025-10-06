@@ -15,6 +15,11 @@ class MainViewModel(private val trainer: QuizeInteractor) : ViewModel() {
     val question: LiveData<QuestionModel> = _question
 
     private var currentQuestionId: Int? = null
+
+    /**
+     * Получает лайв дату из интерактора
+     * и сохраняет в _question так же получает правильный questionId
+     */
     fun getNextQuestion() {
         val result = trainer.getNextQuestion()
         currentQuestionId = result?.questionId
@@ -22,6 +27,13 @@ class MainViewModel(private val trainer: QuizeInteractor) : ViewModel() {
     }
 
 
+    /**
+     * проверяет ответ на вопрос и получает идентификатор текущего вопроса currentQuestionId
+     * проверяет ответ через trainer.checkAnswer и сохраняет результат
+     * в лайв дату _answer в виде модели SelectedModel
+     * @param wordId id слова
+     * @param selectedIndex индекс выбранного варианта ответа
+     */
     fun checkAnswer(wordId: Int, selectedIndex: Int) {
         val questionId = currentQuestionId?:return
         val result = trainer.checkAnswer(questionId, wordId)

@@ -31,9 +31,10 @@ class WordRepository {
     )
 
 /**
- * геттер получения репозитория
+ * предоставляет доступ к внутреннему списку dictionary
+ * @return возвращает список обьектов моделей WordModel
  */
-    fun getEbuchiyList(): List<WordModel> {
+    fun getRepository(): List<WordModel> {
         return dictionary
     }
 }

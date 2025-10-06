@@ -10,7 +10,9 @@ import com.example.newapp.domain.models.ExactlyModel
 import com.example.newapp.domain.models.IsCorrect
 
 /**
- *  AnswerAdapter - связывает данные с View
+ *  Адаптер для связывания данных ExactlyModel с рейсайклером
+ *  @property onItemClick обрабатывает клик по элементу списка
+ *  @property data получает изменяемый список с обьектами модели ExactlyModel
  */
 
 class AnswerAdapter(
@@ -21,8 +23,9 @@ class AnswerAdapter(
 
 
     /**
-     * Метод setDataValue устанавливает новое значение в поле data и делает список
-     * с моделью ExactlyModel изменяемым
+     * Принимает список новых данных типа ExactlyModel и делает список изменяемым
+     * Уведомляет адаптер о том что данные изменились чтобы обновить отображение
+     * @param newData список новых данных типа ExactlyModel
      */
     fun setDataValue(newData: List<ExactlyModel>) {
         data = newData.toMutableList()
@@ -30,8 +33,10 @@ class AnswerAdapter(
     }
 
     /**
-     * Метод updateData принимает полученные isCorrect и selectedIndex и обновляет данные
+     * Принимает полученные isCorrect и selectedIndex и обновляет данные
      * на основе проверки isCorrect, создает копию с возможностью изменения свойств
+     * @param isCorrect создает копию с возможностью изменения свойств
+     * @param selectedIndex индекс выбранного элемента
      */
 
     fun updateData(isCorrect: Boolean, selectedIndex: Int) {
@@ -46,19 +51,10 @@ class AnswerAdapter(
     }
 
 
-    /**
-     * Возвращает размер массива
-     */
     override fun getItemCount(): Int {
         return data.size
     }
 
-
-    /**
-     * метод вызывается для создания нового экземпляра Вью холдера
-     * @param parent получает новый элемент
-     * @param viewType тип вида для создания вью холдера
-     */
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -70,9 +66,7 @@ class AnswerAdapter(
         return AnswerViewHolder(binding)
     }
 
-    /**
-     * OnBindViewHolder связывает данные с представлением текущего Вью холдера
-     */
+
     override fun onBindViewHolder(holder: AnswerViewHolder, position: Int) {
         holder.bind(data[position], position)
 
@@ -87,7 +81,7 @@ class AnswerAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         /**
-         * Метод bind связывает данные модели с элементами ui
+         * Получает обьект содержащий данные для текущего элемента списка
          * @param word обьект модели ExactlyModel
          * @param index индекс элемента в списке
          */
@@ -95,9 +89,6 @@ class AnswerAdapter(
             binding.tvVariantNumber.text = (index + 1).toString()
             binding.tvVariantValue.text = word.translate
 
-            /**
-             * Устанавливаю клик лисенер с параметрами для клика index, word
-             */
             binding.layoutAnswer.setOnClickListener {
                 onItemClick(index, word)
             }
@@ -116,6 +107,7 @@ class AnswerAdapter(
 
                      )
                  }
+
                 IsCorrect.WRONG -> {
                          binding.layoutAnswer.setBackgroundResource(R.drawable.shape_rounded_containers_wrong)
                          binding.tvVariantNumber.background =
