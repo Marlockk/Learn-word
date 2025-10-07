@@ -18,6 +18,11 @@ import com.example.newapp.presentation.viewModels.MainViewModel
 import com.example.newapp.presentation.viewModels.MyViewModelFactory
 
 class MainActivity : AppCompatActivity() {
+
+    /**
+     * @property myViewModel объявление вью модели для последующей инициализации экземпляра вью модели в onCreate
+     * @property myViewAdapter объявление адаптера для инициализации экземпляра адаптера в onCreate
+     */
     private var myViewModel: MainViewModel? = null
 
     private var _binding: ActivityLearnWordBinding? = null
@@ -63,7 +68,10 @@ class MainActivity : AppCompatActivity() {
         subscribe()
     }
 
-
+    /**
+     * Подписка на изменения из вью модели
+     * При изменении ответа или(и) вопроса, обновляет данные адаптера и отображает сообщение о результате выбора
+     */
     fun subscribe() {
         myViewModel?.answer?.observe(this) { result ->
             result?.let { selectedModel ->
@@ -93,10 +101,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    /**
+     * Получает следующий вопрос и обновляет текущее значение questionId
+     */
     private fun showNextQuestion() {
         myViewModel?.getNextQuestion()
     }
+
+    /**
+     * Показывает результат выбора, верно/неверно
+     * @param isCorrect булево значение указывающее является ли ответ правильным или неправильным
+     */
     private fun showResultMessage(isCorrect: Boolean) {
         val color: Int
         val messageText: String
@@ -122,4 +137,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
