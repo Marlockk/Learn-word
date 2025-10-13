@@ -7,24 +7,26 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.newapp.R
 import com.example.newapp.databinding.ItemAnswerBinding
 import com.example.newapp.domain.models.ExactlyModel
-import com.example.newapp.domain.models.IsCorrect
+import com.example.newapp.domain.models.AnswerType
 
 /**
- *  Адаптер для связывания данных ExactlyModel с рейсайклером
+ *  Адаптер для связывания данных [ExactlyModel] с рейсайклером
  *  @property onItemClick обрабатывает клик по элементу списка
- *  @property data получает изменяемый список с обьектами модели ExactlyModel
  */
 
 class AnswerAdapter(
     private val onItemClick: (position: Int, word: ExactlyModel) -> Unit
 ) : RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>() {
 
+    /**
+     *  @property data хранит список обьектов типа [ExactlyModel] изначально инициализируется пустым списком
+      */
+
     private var data: MutableList<ExactlyModel> = mutableListOf()
 
 
     /**
-     * Принимает список новых данных типа ExactlyModel и делает список изменяемым
-     * Уведомляет адаптер о том что данные изменились чтобы обновить отображение
+     * Установка списка новых данных [ExactlyModel]
      * @param newData список новых данных типа ExactlyModel
      */
     fun setDataValue(newData: List<ExactlyModel>) {
@@ -33,8 +35,7 @@ class AnswerAdapter(
     }
 
     /**
-     * Принимает полученные isCorrect и selectedIndex и обновляет данные
-     * на основе проверки isCorrect, создает копию с возможностью изменения свойств
+     * Обновляет состояние обьектов в списке [data] в зависимости от переданных параметров
      * @param isCorrect создает копию с возможностью изменения свойств
      * @param selectedIndex индекс выбранного элемента
      */
@@ -42,9 +43,9 @@ class AnswerAdapter(
     fun updateData(isCorrect: Boolean, selectedIndex: Int) {
         data = data.mapIndexed { index, item ->
             if (index == selectedIndex) {
-                item.copy(isCorrect = if (isCorrect) IsCorrect.CORRECT else IsCorrect.WRONG)
+                item.copy(isCorrect = if (isCorrect) AnswerType.CORRECT else AnswerType.WRONG)
             } else {
-                item.copy(isCorrect = IsCorrect.NEUTRAL)
+                item.copy(isCorrect = AnswerType.NEUTRAL)
             }
         }.toMutableList()
         notifyDataSetChanged()
@@ -94,7 +95,7 @@ class AnswerAdapter(
             }
 
             when (word.isCorrect) {
-                 IsCorrect.CORRECT -> {
+                 AnswerType.CORRECT -> {
                      binding.layoutAnswer.setBackgroundResource(R.drawable.shape_rounded_containers_correct)
                      binding.tvVariantNumber.background =
                          ContextCompat.getDrawable(binding.root.context, R.drawable.shape_rounded_variants_correct)
@@ -108,7 +109,7 @@ class AnswerAdapter(
                      )
                  }
 
-                IsCorrect.WRONG -> {
+                AnswerType.WRONG -> {
                          binding.layoutAnswer.setBackgroundResource(R.drawable.shape_rounded_containers_wrong)
                          binding.tvVariantNumber.background =
                              ContextCompat.getDrawable(binding.root.context, R.drawable.shape_rounded_variants_wrong)
@@ -121,7 +122,7 @@ class AnswerAdapter(
 
                          )
                      }
-                IsCorrect.NEUTRAL -> {
+                AnswerType.NEUTRAL -> {
                     binding.layoutAnswer.setBackgroundResource(R.drawable.shape_rounded_containers)
                     binding.tvVariantNumber.background =
                         ContextCompat.getDrawable(binding.root.context, R.drawable.shape_rounded_variants)

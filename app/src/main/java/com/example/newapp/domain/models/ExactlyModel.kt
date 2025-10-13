@@ -11,13 +11,13 @@ package com.example.newapp.domain.models
 data class ExactlyModel(
     val wordId: Int,
     val translate: String,
-    val isCorrect: IsCorrect
+    val isCorrect: AnswerType
 )
 
 /**
- * Варианты состояний isCorrect
+ * Возможные типы ответов AnswerType
  */
-enum class IsCorrect {
+enum class AnswerType {
     CORRECT,
     WRONG,
     NEUTRAL

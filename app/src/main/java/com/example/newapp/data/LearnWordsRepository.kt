@@ -31,8 +31,8 @@ class WordRepository {
     )
 
 /**
- * предоставляет доступ к внутреннему списку dictionary
- * @return возвращает список обьектов моделей WordModel
+ * предоставляет доступ к внутреннему репозиторию
+ * @return возвращает список обьектов моделей [WordModel]
  */
     fun getRepository(): List<WordModel> {
         return dictionary

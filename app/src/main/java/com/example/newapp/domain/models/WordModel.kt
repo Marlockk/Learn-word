@@ -2,7 +2,7 @@ package com.example.newapp.domain.models
 
 
 /**
- * Модель слов в репозитории
+ * Модель слова
  *
  * @property wordId id слова
  * @property original оригинал слова без перевода

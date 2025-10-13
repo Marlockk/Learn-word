@@ -2,7 +2,7 @@ package com.example.newapp.domain.models
 
 
 /**
- * Модель списка вариантов ответа
+ * Модель варианта ответа
  *
  * @property questionId id вопроса
  * @property original оригинальное слово без перевода
