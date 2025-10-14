@@ -7,12 +7,13 @@ import com.example.newapp.domain.models.WordModel
 
 class QuizeInteractor(private val repository: WordRepository) {
 
-    /***
-     * @return Список объектов [WordModel], полученных из репозитория
+    /**
+     *Метод получения списка слов загадок/ответов типа [WordModel]
+     * @return возвращает список слов [WordModel]
      */
 
     fun getList(): List<WordModel> {
-        return repository.getRepository()
+        return repository.getList()
     }
 
 

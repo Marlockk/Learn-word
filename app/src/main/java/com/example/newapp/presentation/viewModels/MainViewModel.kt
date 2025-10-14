@@ -18,7 +18,7 @@ class MainViewModel(private val trainer: QuizeInteractor) : ViewModel() {
 
     /**
      * Получает лайв дату из интерактора
-     * и сохраняет в _question так же получает правильный questionId
+     * и сохраняет в _question так же получает questionId правильного вопроса
      */
     fun getNextQuestion() {
         val result = trainer.getNextQuestion()

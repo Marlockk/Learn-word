@@ -31,10 +31,10 @@ class WordRepository {
     )
 
 /**
- * предоставляет доступ к внутреннему репозиторию
- * @return возвращает список обьектов моделей [WordModel]
+ *Метод получения списка слов загадок/ответов типа [WordModel]
+ * @return возвращает список слов [WordModel]
  */
-    fun getRepository(): List<WordModel> {
+    fun getList(): List<WordModel> {
         return dictionary
     }
 }
