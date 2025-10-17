@@ -23,6 +23,10 @@ class HomePageActivity : AppCompatActivity() {
                 val intent = Intent(this@HomePageActivity, GameActivity::class.java)
                 startActivity(intent)
             }
+            tasks.setOnClickListener {
+                val intent = Intent(this@HomePageActivity, TasksActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
 
