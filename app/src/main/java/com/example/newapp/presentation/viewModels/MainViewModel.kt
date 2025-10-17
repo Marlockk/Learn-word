@@ -3,6 +3,7 @@ package com.example.newapp.presentation.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.newapp.domain.models.AnswerType
 import com.example.newapp.domain.models.QuestionModel
 import com.example.newapp.domain.useCases.QuizeInteractor
 import com.example.newapp.domain.models.SelectedModel
@@ -17,7 +18,7 @@ class MainViewModel(private val trainer: QuizeInteractor) : ViewModel() {
     private var currentQuestionId: Int? = null
 
     /**
-     * Получает лайв дату из интерактора
+     * Получает следующий вопрос из интерактора
      * и сохраняет в _question так же получает questionId правильного вопроса
      */
     fun getNextQuestion() {
@@ -37,10 +38,16 @@ class MainViewModel(private val trainer: QuizeInteractor) : ViewModel() {
     fun checkAnswer(wordId: Int, selectedIndex: Int) {
         val questionId = currentQuestionId?:return
         val result = trainer.checkAnswer(questionId, wordId)
+        val answerType: AnswerType
+        answerType = if (result) {
+            AnswerType.CORRECT
+        } else {
+            AnswerType.WRONG
+        }
         _answer.postValue(
             SelectedModel(
                 selectedIndex = selectedIndex,
-                isCorrect = result
+                isCorrect = answerType
             )
         )
     }

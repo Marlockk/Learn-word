@@ -10,7 +10,7 @@ import com.example.newapp.domain.models.ExactlyModel
 import com.example.newapp.domain.models.AnswerType
 
 /**
- *  Адаптер для связывания данных [ExactlyModel] с рейсайклером
+ *  Получает слова из вью модели типа [ExactlyModel] и отвечает за то как они будут отображаться в UI
  *  @property onItemClick обрабатывает клик по элементу списка
  */
 
@@ -26,7 +26,7 @@ class AnswerAdapter(
 
 
     /**
-     * Установка списка новых данных [ExactlyModel]
+     * Установка списка новых слов [ExactlyModel]
      * @param newData список новых данных типа ExactlyModel
      */
     fun setDataValue(newData: List<ExactlyModel>) {
@@ -40,10 +40,12 @@ class AnswerAdapter(
      * @param selectedIndex индекс выбранного элемента
      */
 
-    fun updateData(isCorrect: Boolean, selectedIndex: Int) {
+    fun updateData(
+        answerType: AnswerType,
+        selectedIndex: Int) {
         data = data.mapIndexed { index, item ->
             if (index == selectedIndex) {
-                item.copy(isCorrect = if (isCorrect) AnswerType.CORRECT else AnswerType.WRONG)
+                item.copy(isCorrect = answerType)
             } else {
                 item.copy(isCorrect = AnswerType.NEUTRAL)
             }
@@ -82,7 +84,7 @@ class AnswerAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         /**
-         * Получает обьект содержащий данные для текущего элемента списка
+         * Обрабатывает действие для активного элемента/слова исходя из входных параметров
          * @param word обьект модели ExactlyModel
          * @param index индекс элемента в списке
          */
