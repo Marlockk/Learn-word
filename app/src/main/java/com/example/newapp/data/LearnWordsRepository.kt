@@ -31,9 +31,10 @@ class WordRepository {
     )
 
 /**
- * геттер получения репозитория
+ *Метод получения списка слов загадок/ответов типа [WordModel]
+ * @return возвращает список слов [WordModel]
  */
-    fun getEbuchiyList(): List<WordModel> {
+    fun getList(): List<WordModel> {
         return dictionary
     }
 }

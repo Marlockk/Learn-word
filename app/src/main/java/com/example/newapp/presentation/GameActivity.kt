@@ -1,5 +1,6 @@
 package com.example.newapp.presentation
 
+import android.content.Intent
 import com.example.newapp.domain.AnswerAdapter
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -12,12 +13,18 @@ import com.example.newapp.domain.useCases.NUMBER_OF_ANSWERS
 import com.example.newapp.R
 import com.example.newapp.data.WordRepository
 import com.example.newapp.databinding.ActivityLearnWordBinding
+import com.example.newapp.domain.models.AnswerType
 import com.example.newapp.domain.models.ExactlyModel
 import com.example.newapp.domain.useCases.QuizeInteractor
 import com.example.newapp.presentation.viewModels.MainViewModel
 import com.example.newapp.presentation.viewModels.MyViewModelFactory
 
-class MainActivity : AppCompatActivity() {
+class GameActivity : AppCompatActivity() {
+
+    /**
+     * myViewModel объявление вью модели для последующей инициализации экземпляра вью модели в onCreate
+     * myViewAdapter объявление адаптера для инициализации экземпляра адаптера в onCreate
+     */
     private var myViewModel: MainViewModel? = null
 
     private var _binding: ActivityLearnWordBinding? = null
@@ -59,11 +66,20 @@ class MainActivity : AppCompatActivity() {
             btnSkip.setOnClickListener {
                 showNextQuestion()
             }
+
+            ibClose.setOnClickListener {
+                val intent = Intent(this@GameActivity, HomePageActivity::class.java)
+                startActivity(intent)
+            }
         }
         subscribe()
+
     }
 
-
+    /**
+     * Подписка на изменения из вью модели
+     * При изменении ответа или(и) вопроса, обновляет данные адаптера и отображает сообщение о результате выбора
+     */
     fun subscribe() {
         myViewModel?.answer?.observe(this) { result ->
             result?.let { selectedModel ->
@@ -93,23 +109,39 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    /**
+     * Получает следующий вопрос и обновляет текущее значение questionId
+     */
     private fun showNextQuestion() {
         myViewModel?.getNextQuestion()
     }
-    private fun showResultMessage(isCorrect: Boolean) {
+
+    /**
+     * Показывает результат выбора, верно/неверно
+     * @param isCorrect булево значение указывающее является ли ответ правильным или неправильным
+     */
+    private fun showResultMessage(answerType: AnswerType) {
         val color: Int
         val messageText: String
         val resultIconResource: Int
 
-        if (isCorrect) {
-            color = ContextCompat.getColor(this, R.color.correctAnswerColor)
-            resultIconResource = R.drawable.ic_correct
-            messageText = getResources().getString(R.string.title_correct)
-        } else {
-            color = ContextCompat.getColor(this, R.color.wrongAnswerColor)
-            resultIconResource = R.drawable.ic_wrong
-            messageText = getResources().getString(R.string.title_wrong)
+        when (answerType) {
+            AnswerType.CORRECT -> {
+                color = ContextCompat.getColor(this, R.color.correctAnswerColor)
+                resultIconResource = R.drawable.ic_correct
+                messageText = getResources().getString(R.string.title_correct)
+            }
+
+            AnswerType.WRONG -> {
+                color = ContextCompat.getColor(this, R.color.wrongAnswerColor)
+                resultIconResource = R.drawable.ic_wrong
+                messageText = getResources().getString(R.string.title_wrong)
+            }
+
+            AnswerType.NEUTRAL -> {
+                binding.layoutResult.isVisible = false
+                return
+            }
         }
 
         with(binding) {
@@ -120,6 +152,6 @@ class MainActivity : AppCompatActivity() {
             tvResultMessage.text = messageText
             ivResultIcon.setImageResource(resultIconResource)
         }
+
     }
 }
-

@@ -7,22 +7,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.newapp.R
 import com.example.newapp.databinding.ItemAnswerBinding
 import com.example.newapp.domain.models.ExactlyModel
-import com.example.newapp.domain.models.IsCorrect
+import com.example.newapp.domain.models.AnswerType
 
 /**
- *  AnswerAdapter - связывает данные с View
+ *  Получает слова из вью модели типа [ExactlyModel] и отвечает за то как они будут отображаться в UI
+ *  @property onItemClick обрабатывает клик по элементу списка
  */
 
 class AnswerAdapter(
     private val onItemClick: (position: Int, word: ExactlyModel) -> Unit
 ) : RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>() {
 
+    /**
+     *  @property data хранит список обьектов типа [ExactlyModel] изначально инициализируется пустым списком
+      */
+
     private var data: MutableList<ExactlyModel> = mutableListOf()
 
 
     /**
-     * Метод setDataValue устанавливает новое значение в поле data и делает список
-     * с моделью ExactlyModel изменяемым
+     * Установка списка новых слов [ExactlyModel]
+     * @param newData список новых данных типа ExactlyModel
      */
     fun setDataValue(newData: List<ExactlyModel>) {
         data = newData.toMutableList()
@@ -30,35 +35,29 @@ class AnswerAdapter(
     }
 
     /**
-     * Метод updateData принимает полученные isCorrect и selectedIndex и обновляет данные
-     * на основе проверки isCorrect, создает копию с возможностью изменения свойств
+     * Обновляет состояние слов в списке [data] в зависимости от переданных параметров
+     * @param isCorrect создает копию с возможностью изменения свойств
+     * @param selectedIndex индекс выбранного элемента
      */
 
-    fun updateData(isCorrect: Boolean, selectedIndex: Int) {
+    fun updateData(
+        answerType: AnswerType,
+        selectedIndex: Int) {
         data = data.mapIndexed { index, item ->
             if (index == selectedIndex) {
-                item.copy(isCorrect = if (isCorrect) IsCorrect.CORRECT else IsCorrect.WRONG)
+                item.copy(isCorrect = answerType)
             } else {
-                item.copy(isCorrect = IsCorrect.NEUTRAL)
+                item.copy(isCorrect = AnswerType.NEUTRAL)
             }
         }.toMutableList()
         notifyDataSetChanged()
     }
 
 
-    /**
-     * Возвращает размер массива
-     */
     override fun getItemCount(): Int {
         return data.size
     }
 
-
-    /**
-     * метод вызывается для создания нового экземпляра Вью холдера
-     * @param parent получает новый элемент
-     * @param viewType тип вида для создания вью холдера
-     */
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -70,9 +69,7 @@ class AnswerAdapter(
         return AnswerViewHolder(binding)
     }
 
-    /**
-     * OnBindViewHolder связывает данные с представлением текущего Вью холдера
-     */
+
     override fun onBindViewHolder(holder: AnswerViewHolder, position: Int) {
         holder.bind(data[position], position)
 
@@ -87,7 +84,7 @@ class AnswerAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         /**
-         * Метод bind связывает данные модели с элементами ui
+         * Обрабатывает действие для активного элемента/слова исходя из входных параметров
          * @param word обьект модели ExactlyModel
          * @param index индекс элемента в списке
          */
@@ -95,15 +92,12 @@ class AnswerAdapter(
             binding.tvVariantNumber.text = (index + 1).toString()
             binding.tvVariantValue.text = word.translate
 
-            /**
-             * Устанавливаю клик лисенер с параметрами для клика index, word
-             */
             binding.layoutAnswer.setOnClickListener {
                 onItemClick(index, word)
             }
 
             when (word.isCorrect) {
-                 IsCorrect.CORRECT -> {
+                 AnswerType.CORRECT -> {
                      binding.layoutAnswer.setBackgroundResource(R.drawable.shape_rounded_containers_correct)
                      binding.tvVariantNumber.background =
                          ContextCompat.getDrawable(binding.root.context, R.drawable.shape_rounded_variants_correct)
@@ -116,7 +110,8 @@ class AnswerAdapter(
 
                      )
                  }
-                IsCorrect.WRONG -> {
+
+                AnswerType.WRONG -> {
                          binding.layoutAnswer.setBackgroundResource(R.drawable.shape_rounded_containers_wrong)
                          binding.tvVariantNumber.background =
                              ContextCompat.getDrawable(binding.root.context, R.drawable.shape_rounded_variants_wrong)
@@ -129,7 +124,7 @@ class AnswerAdapter(
 
                          )
                      }
-                IsCorrect.NEUTRAL -> {
+                AnswerType.NEUTRAL -> {
                     binding.layoutAnswer.setBackgroundResource(R.drawable.shape_rounded_containers)
                     binding.tvVariantNumber.background =
                         ContextCompat.getDrawable(binding.root.context, R.drawable.shape_rounded_variants)

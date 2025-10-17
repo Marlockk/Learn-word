@@ -1,38 +1,42 @@
 package com.example.newapp.domain.useCases
 import com.example.newapp.data.WordRepository
 import com.example.newapp.domain.models.ExactlyModel
-import com.example.newapp.domain.models.IsCorrect
+import com.example.newapp.domain.models.AnswerType
 import com.example.newapp.domain.models.QuestionModel
 import com.example.newapp.domain.models.WordModel
 
-/**
- *Основная логика приложения
- */
-
 class QuizeInteractor(private val repository: WordRepository) {
 
-    /***
-     * Получение репозитория в интеракторе
+    /**
+     *Метод получения списка слов загадок/ответов типа [WordModel]
+     * @return возвращает список слов [WordModel]
      */
 
     fun getList(): List<WordModel> {
-        return repository.getEbuchiyList()
+        return repository.getList()
     }
 
 
     /**
-     * Метод формирования нового списка вопросов, возвращает модель вопроса
+     * Метод формирования нового списка вопросов
+     *
      * questionId содержит id для каждого полученного слова для загадки
      * original содержит оригинальный текст на английском для каждого слова из списка
-     * variants содержит случайные 4 значения для выбора из модели ExactlyModel, по умолчанию состояние этих
-     * значений нейтральное
+     *@return возвращает измененную модель [QuestionModel]
      */
 
     fun getNextQuestion(): QuestionModel? {
         val notLearnedList = getList().filter { !it.learned }
+        /**
+         * Получает список моделей слов [WordModel] и фильтрует их по параметру !learned
+         */
         if (notLearnedList.isEmpty()) return null
 
         val correctWord = notLearnedList.random()
+
+        /**
+         * Случайно выбирается загаданное слово из [notLearnedList] и сохраняется в correctWord
+         */
 
         val variants = if (notLearnedList.size < NUMBER_OF_ANSWERS) {
             val learnedList = getList().filter { it.learned }.shuffled()
@@ -42,7 +46,10 @@ class QuizeInteractor(private val repository: WordRepository) {
         } else {
             (notLearnedList - correctWord).shuffled().take(NUMBER_OF_ANSWERS - 1)
         }
-
+        /**
+         * variants содержит случайные 4 значения для выбора из модели [ExactlyModel], по умолчанию состояние этих
+         * значений нейтральное
+          */
 
         val allVariants = (variants + correctWord).shuffled()
 
@@ -50,7 +57,7 @@ class QuizeInteractor(private val repository: WordRepository) {
             ExactlyModel(
                 wordId = word.wordId,
                 translate = word.translate,
-                isCorrect = IsCorrect.NEUTRAL
+                isCorrect = AnswerType.NEUTRAL
             )
         }
 
@@ -63,7 +70,10 @@ class QuizeInteractor(private val repository: WordRepository) {
 
 
     /**    Метод проверки ответа
-     *  Возвращает булевый результат при проверке двух значений, корректное слово и выбранное слово
+     *
+     * @param questionId id вопроса
+     * @param answerId id ответа
+     * @return Возвращает булевый результат при проверке двух значений, корректное слово и выбранное слово
      */
     fun checkAnswer(questionId: Int, answerId: Int): Boolean {
         val correctWord = getList().find { it.wordId == questionId }
@@ -74,5 +84,5 @@ class QuizeInteractor(private val repository: WordRepository) {
 }
 
 
-/** Константа для установки количества отображаемых значений */
+/** Количество ответов в вопросе*/
 const val NUMBER_OF_ANSWERS: Int = 4
